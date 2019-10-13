@@ -38,8 +38,9 @@ You can specify the boot images to be served with the variable `pxeserver_images
 
 This role depends on:
 
-- [bertvv.tftp](https://galaxy.ansible.com/list#/roles/3597)
-- [bertvv.dhcp](https://galaxy.ansible.com/list#/roles/4859)
+- [msaf1980.tftp](https://github.com/msaf1980/ansible-role-tftp)
+- [msaf1980.dhcp](https://github.com/msaf1980/ansible-role-dhcp)
+- [msaf1980.nfsserver] (https://github.com/msaf1980/ansible-role-nfsserver) Non-mandatory, if not needed to export rootfs by NFS, but you can do it over FTP or HTTP
 
 ## Example Playbook
 
@@ -50,9 +51,11 @@ See the [test playbook](tests/test.yml)
 The `tests` directory contains tests for this role in the form of a Vagrant environment. You should install the dependent roles
 
 ```ShellSession
-$ cd tests/
-$ ansible-galaxy install -p roles bertvv.dhcp
-$ ansible-galaxy install -p roles bertvv.tftp
+$ 
+cd tests/
+git clone ssh://git@github.com/msaf1980/ansible-role-tftp roles/msaf1980.tftp
+git clone ssh://git@github.com/msaf1980/ansible-role-dhcp roles/msaf1980.dhcp
+git clone ssh://git@github.com/msaf1980/ansible-role-nfsserver roles/msaf1980.nfsserver
 $ vagrant up
 ```
 

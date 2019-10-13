@@ -14,6 +14,7 @@
         label: CentOS 7 x86_64
 
   roles:
-    - bertvv.tftp
-    - bertvv.dhcp
+    - msaf1980.tftp
+    - msaf1980.dhcp
+    - msaf1980.nfsserver
     - pxeserver

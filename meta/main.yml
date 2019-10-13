@@ -15,3 +15,4 @@ galaxy_info:
 dependencies:
   - msaf1980.tftp
   - msaf1980.dhcp
+  - msaf1980.nfsserver

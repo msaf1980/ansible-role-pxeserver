@@ -5,7 +5,7 @@
   with_first_found:
     - "{{ ansible_distribution }}.yml"
     - "{{ ansible_os_family }}.yml"
-  tags: pxeserver
+  tags: pxeserver, config
 
 - name: Install packages
   package:
@@ -20,67 +20,60 @@
     state: started
     enabled: true
   with_items: "{{ pxeserver_services }}"
-  tags: pxeserver
+  tags: pxeserver, config
 
 - name: Create directory for PXEboot related files
   file:
     path: "{{ pxeserver_path }}"
     state: directory
-  tags: pxeserver
+  tags: pxeserver, config
 
 - name: Make Network Boot Programs for BIOS and UEFI based systems available
   command: cp "{{ item }}" "{{ pxeserver_path }}/{{ item|regex_replace('.*/', '') }}"
   args:
     creates: "{{ pxeserver_path }}/{{ item|regex_replace('.*/', '') }}"
   with_items: "{{ pxeserver_files }}"
-  tags: pxeserver
+  tags: pxeserver, config
 
 - name: Create directory for PXE server configuration
   file:
     path: "{{ pxeserver_path }}/pxelinux.cfg"
     state: directory
-  tags: pxeserver
+  tags: pxeserver, config
 
 - name: Create directories for boot images
   file:
     path: "{{ pxeserver_path }}/{{ item.name }}"
     state: directory
   with_items: "{{ pxeserver_images }}"
-  tags: pxeserver
+  tags: pxeserver, config
 
 - name: Download boot images
   get_url:
     url: "{{ item.kernel_url }}"
     dest: "{{ pxeserver_path }}/{{ item.name }}/vmlinuz"
   with_items: "{{ pxeserver_images }}"
-  tags: pxeserver
+  tags: pxeserver, config
 
 - name: Download initrd images
   get_url:
     url: "{{ item.initrd_url }}"
     dest: "{{ pxeserver_path }}/{{ item.name }}/initrd.img"
   with_items: "{{ pxeserver_images }}"
-  tags: pxeserver
+  tags: pxeserver, config
 
 - name: Ensure directory for the root filesystem exists
   file:
     path: "{{ pxeserver_path }}/{{ item.name }}/rootfs"
     state: directory
   with_items: "{{ pxeserver_images }}"
-  tags: pxeserver
-
-- name: Create NFS exports file
-  template:
-    src: etc_exports
-    dest: /etc/exports
-  notify: restart nfs
-  tags: pxeserver
+  tags: pxeserver, config
 
 - name: Create default menu for BIOS based systems
   template:
     src: pxelinux.cfg_default
     dest: "{{ pxeserver_path }}/pxelinux.cfg/default"
-  tags: pxeserver
+  tags: pxeserver, config
 
 - name: DHCP configuration for PXE server
   template:
@@ -90,7 +83,7 @@
     group: root
     mode: '0600'
   notify: restart dhcp
-  tags: pxeserver
+  tags: pxeserver, config
   
 - name: Copy local kickstart files
   copy:
@@ -98,7 +91,7 @@
     dest: "{{ pxeserver_path }}/{{ item.name }}/ks.cfg"
   when: item.kickstart_path is defined
   with_items: "{{ pxeserver_images }}"
-  tags: pxeserver
+  tags: pxeserver, config
 
 - name: Download remote kickstart files
   get_url:
@@ -106,11 +99,11 @@
     dest: "{{ pxeserver_path }}/{{ item.name }}/ks.cfg"
   when: item.kickstart_url is defined
   with_items: "{{ pxeserver_images }}"
-  tags: pxeserver
+  tags: pxeserver, config
 
 - name: Load PXELinux DHCP configuration from main DHCP config file
   lineinfile:
     dest: /etc/dhcp/dhcpd.conf
     line: 'include "/etc/dhcpd-pxelinux.conf";'
   notify: restart dhcp
-  tags: pxeserver
+  tags: pxeserver, config
